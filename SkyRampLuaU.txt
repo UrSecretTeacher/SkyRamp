@@ -407,14 +407,19 @@ end)
 DeleteButton.MouseButton1Click:Connect(function()
     hasSpawnedRamp = false
 
-    local rampFolder = game.Workspace:FindFirstChild("TeachersSkyRamp")
+	local folders = game.Workspace:GetChildren("TeachersSkyRamp")
+	if folders then
+	for _, trash in pairs(folders) do
+	trash:Destroy()
+	end
+	end
 
     if rampFolder then
         for _, thing in pairs(rampFolder:GetChildren()) do
             thing:Destroy()
         end
         rampFolder:Destroy()
+        rampFolder = nil
     end
-
     isCalling = false
 end)
