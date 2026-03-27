@@ -261,6 +261,7 @@ SpawnButton.MouseButton1Click:Connect(function()
     rampFolder.Parent = workspace
 
     for i = 1, 89 do
+		wait(0.1)
         local part = Instance.new("Part")
         part.BrickColor = BrickColor.new("Cashmere")
         part.Material = Enum.Material.WoodPlanks
@@ -381,10 +382,11 @@ callButton.MouseButton1Click:Connect(function()
 
     wait(5)
 
+	Platform.CanCollide = false
     local tween3 = tweenService:Create(Platform, TweenInfo.new(1.5, Enum.EasingStyle.Linear), {Position = resetPos})
     tween3:Play()
     tween3.Completed:Wait()
-
+	Platform.CanCollide = true
     isCalling = false
 end)
 
