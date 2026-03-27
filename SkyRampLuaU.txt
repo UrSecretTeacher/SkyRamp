@@ -271,8 +271,9 @@ SpawnButton.MouseButton1Click:Connect(function()
     firstPart = nil
 
     rampFolder = Instance.new("Folder")
-    rampFolder.Name = "TeachersSkyRamp"
-    rampFolder.Parent = workspace
+	rampFolder.Name = "TeachersSkyRamp"
+	rampFolder.Parent = workspace
+	rampFolder:SetAttribute("IsRamp", true)
 
     for i = 1, 89 do
 		wait(partSpawnDuration)
@@ -407,10 +408,14 @@ end)
 DeleteButton.MouseButton1Click:Connect(function()
     hasSpawnedRamp = false
 
-    local rampFolder = game.Workspace:FindFirstChild("TeachersSkyRamp")
-
-    if rampFolder then
+    if rampFolder 
+    and rampFolder.Parent == workspace 
+    and rampFolder:IsA("Folder") 
+    and rampFolder.Name == "TeachersSkyRamp" 
+    and rampFolder:GetAttribute("IsRamp") == true then
+        
         rampFolder:Destroy()
+        rampFolder = nil
     end
 
     isCalling = false
