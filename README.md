@@ -2,6 +2,8 @@
 
 READ DESC!!
 
+THIS SCRIPT/SOFTWARE IS CREATED AND OWNED FULLY BY ME, RYAN, URMADTEACHER.
+
 This is a "Sky Ramp" that I have scripted, similar to the ones that you see on GTA V.
 This code is in LuaU and is meant for Roblox games.
 When launching this script, it spawns a sky ramp on you, slightly underneath.
