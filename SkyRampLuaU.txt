@@ -1,9 +1,23 @@
+--[[
+NOTE: ONLY EDIT IF YOU KNOW WHAT YOU ARE DOING. PEOPLE WITH NO EXPERIENCE IN CODING ARE NOT RECOMMENDED TO EDIT THIS FILE.
+
+OWNER: UrMadTeacher
+
+YouTube: @UrMadTeacher
+TikTok: @UrMadTeacher / urmadteachermain
+Roblox: @UrMadTeacher
+
+PLEASE DO NOT REMOVE CREDITS (greatly appreciate if you keep them :3)
+]]
+
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local tweenService = game:GetService("TweenService")
 
 local isCalling = false
 local hasSpawnedRamp = false
+
+local partSpawnDuration = 0.05 --Change this to how long each part should take to load from the ramp. Set to 0 if you want instant load, however might lag out low-end devices.
 
 local MaterialLIST = nil
 local ColorLIST = nil
@@ -261,7 +275,7 @@ SpawnButton.MouseButton1Click:Connect(function()
     rampFolder.Parent = workspace
 
     for i = 1, 89 do
-		wait(0.1)
+		wait(partSpawnDuration)
         local part = Instance.new("Part")
         part.BrickColor = BrickColor.new("Cashmere")
         part.Material = Enum.Material.WoodPlanks
