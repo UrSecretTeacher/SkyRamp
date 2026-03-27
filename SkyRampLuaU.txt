@@ -1,0 +1,401 @@
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local tweenService = game:GetService("TweenService")
+
+local isCalling = false
+local hasSpawnedRamp = false
+
+local MaterialLIST = nil
+local ColorLIST = nil
+
+local firstPart = nil
+local lastPart = nil
+local Pplatform = nil
+local pPlatform = nil
+local rampFolder = nil
+
+local openMaterials = false
+local openColors = false
+
+local root
+
+local function updateRoot()
+    root = player.Character and player.Character:WaitForChild("HumanoidRootPart") or nil
+end
+
+player.CharacterAdded:Connect(function()
+    updateRoot()
+    if hasSpawnedRamp then
+        if rampFolder then
+            firstPart = rampFolder:FindFirstChild("firstPart")
+            lastPart = rampFolder:FindFirstChild("LastPartBruh")
+            Pplatform = rampFolder:FindFirstChild("Platform")
+            pPlatform = rampFolder:FindFirstChild("platform")
+            if firstPart and Pplatform then
+                Pplatform.CFrame = firstPart.CFrame * CFrame.new(0, Pplatform.Size.Y/2 + 2, 0)
+            end
+        end
+    end
+end)
+
+updateRoot()
+
+if player.PlayerGui:FindFirstChild("TeachersRampUI") then
+	player.PlayerGui:FindFirstChild("TeachersRampUI"):Destroy()
+	wait(0.1)
+end
+
+local ui = Instance.new("ScreenGui")
+ui.Parent = player.PlayerGui
+ui.Name = "TeachersRampUI"
+
+local materials = {
+	Enum.Material.WoodPlanks,
+	Enum.Material.Metal,
+	Enum.Material.Concrete,
+	Enum.Material.Neon,
+	Enum.Material.Slate,
+	Enum.Material.Brick,
+	Enum.Material.Glass,
+	Enum.Material.Fabric,
+	Enum.Material.SmoothPlastic,
+	Enum.Material.Ice,
+	Enum.Material.Marble,
+	Enum.Material.Grass
+}
+
+local allMaterials = {}
+for _, mat in ipairs(Enum.Material:GetEnumItems()) do
+	table.insert(allMaterials, mat)
+end
+
+local materialList = Instance.new("ScrollingFrame")
+materialList.Parent = ui
+materialList.Position = UDim2.new(0.425, 0, 0.4, 0)
+materialList.Size = UDim2.new(0.15, 0, 0.25, 0)
+materialList.BackgroundColor3 = Color3.new(0, 0, 0)
+materialList.BackgroundTransparency = 0.2
+materialList.CanvasSize = UDim2.new(0, 0, 0, #allMaterials * 30 + 10)
+materialList.ScrollBarThickness = 8
+materialList.BorderSizePixel = 0
+materialList.Visible = false
+
+MaterialLIST = materialList
+
+local matListLayout = Instance.new("UIListLayout")
+matListLayout.Parent = materialList
+matListLayout.FillDirection = Enum.FillDirection.Vertical
+matListLayout.SortOrder = Enum.SortOrder.Name
+matListLayout.Padding = UDim.new(0, 2)
+
+for i, mat in ipairs(allMaterials) do
+	local button = Instance.new("TextButton")
+	button.Parent = materialList
+	button.Size = UDim2.new(1, -4, 0, 25)
+	button.Position = UDim2.new(0, 2, 0, 0)
+	button.Text = mat.Name
+	button.Name = mat.Name
+	button.Font = Enum.Font.SourceSansBold
+	button.TextScaled = true
+	button.TextColor3 = Color3.new(1,1,1)
+	button.BackgroundColor3 = Color3.new(0.1,0.1,0.1)
+	button.BorderSizePixel = 0
+
+	button.MouseButton1Click:Connect(function()
+		if rampFolder then
+			for _, part in pairs(rampFolder:GetChildren()) do
+				if part:IsA("BasePart") then
+					part.Material = mat
+					if mat == Enum.Material.Glass then
+					part.Transparency = 0.5
+					else
+					part.Transparency = 0	
+					end
+				end
+			end
+		end
+	end)
+end
+
+local colors = {
+	Color3.fromRGB(255, 0, 0), Color3.fromRGB(255, 165, 0), Color3.fromRGB(255, 255, 0),
+	Color3.fromRGB(0, 255, 0), Color3.fromRGB(0, 128, 0), Color3.fromRGB(0, 0, 255),
+	Color3.fromRGB(75, 0, 130), Color3.fromRGB(238, 130, 238), Color3.fromRGB(255, 192, 203),
+	Color3.fromRGB(128, 0, 128), Color3.fromRGB(0, 255, 255), Color3.fromRGB(0, 128, 128),
+	Color3.fromRGB(255, 255, 255), Color3.fromRGB(128, 128, 128), Color3.fromRGB(0, 0, 0),
+	Color3.fromRGB(139, 69, 19),
+}
+
+local colorFrame = Instance.new("Frame")
+colorFrame.Parent = ui
+colorFrame.AnchorPoint = Vector2.new(0.5, 0)
+colorFrame.Position = UDim2.new(0.5, 0, 0.4, 0)
+colorFrame.Size = UDim2.new(0.25, 0, 0.12, 0)
+colorFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+colorFrame.BackgroundTransparency = 0.2
+colorFrame.BorderSizePixel = 0
+colorFrame.Visible = false
+ColorLIST = colorFrame
+
+local uicorner2 = Instance.new("UICorner")
+uicorner2.CornerRadius = UDim.new(0, 12)
+uicorner2.Parent = colorFrame
+
+local grid = Instance.new("UIGridLayout")
+grid.Parent = colorFrame
+grid.CellSize = UDim2.new(0, 70, 0, 70) -- bigger squares
+grid.CellPadding = UDim2.new(0, 6, 0, 6)
+grid.FillDirection = Enum.FillDirection.Horizontal
+grid.HorizontalAlignment = Enum.HorizontalAlignment.Center
+grid.VerticalAlignment = Enum.VerticalAlignment.Center
+grid.SortOrder = Enum.SortOrder.LayoutOrder
+
+for _, c in ipairs(colors) do
+	local btn = Instance.new("TextButton")
+	btn.Parent = colorFrame
+	btn.Size = UDim2.new(1, 0, 1, 0)
+	btn.BackgroundColor3 = c
+	btn.Text = ""
+	btn.BorderSizePixel = 0
+	btn.AutoButtonColor = true
+
+	local uicorner = Instance.new("UICorner")
+	uicorner.CornerRadius = UDim.new(0, 12)
+	uicorner.Parent = btn
+
+	btn.MouseButton1Click:Connect(function()
+		if rampFolder then
+			for _, part in pairs(rampFolder:GetChildren()) do
+				if part:IsA("BasePart") then
+					part.BrickColor = BrickColor.new(c)
+				end
+			end
+		end
+	end)
+end
+
+local function createButton(text, posY, color)
+    local btn = Instance.new("TextButton")
+    btn.Parent = ui
+    btn.Transparency = 0.2
+    btn.BackgroundColor3 = Color3.new(0, 0, 0)
+    btn.Size = UDim2.new(0.1, 0, 0.02, 0)
+    btn.Position = UDim2.new(0.007, 0, posY, 0)
+    btn.Font = Enum.Font.BuilderSansExtraBold
+    btn.Text = text
+    btn.TextScaled = true
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = color
+    stroke.Parent = btn
+    stroke.Thickness = 2
+    local stroke2 = stroke:Clone()
+	stroke2.Name = "UIStroke2"
+    stroke2.Parent = btn
+    stroke2.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    return btn
+end
+
+local SpawnButton = createButton("Spawn Ramp", 0.895, Color3.new(0,1,0))
+local callButton = createButton("Call elevator", 0.92, Color3.new(0,1,1))
+local DeleteButton = createButton("Delete Ramp", 0.945, Color3.new(1,0,0))
+local MaterialButton = createButton("Materials", 0.87, Color3.new(0.8, 0.8, 0.8))
+local ColorButton = createButton("Colors", 0.845, Color3.new(1, 1, 1))
+
+MaterialButton.MouseButton1Click:Connect(function()
+	if openMaterials == false then
+		MaterialLIST.Visible = true
+		openMaterials = true
+		else
+		MaterialLIST.Visible = false
+		openMaterials = false	
+	end
+end)
+
+ColorButton.MouseButton1Click:Connect(function()
+	if openColors == false then
+		ColorLIST.Visible = true
+		openColors = true
+	else
+		ColorLIST.Visible = false
+		openColors = false	
+	end
+end)
+
+local gradient = Instance.new("UIGradient")
+
+gradient.Rotation = 0
+
+gradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
+    ColorSequenceKeypoint.new(0.17, Color3.fromRGB(255, 165, 0)),
+    ColorSequenceKeypoint.new(0.33, Color3.fromRGB(255, 255, 0)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 255, 0)),
+    ColorSequenceKeypoint.new(0.67, Color3.fromRGB(0, 0, 255)),
+    ColorSequenceKeypoint.new(0.83, Color3.fromRGB(75, 0, 130)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(148, 0, 211))
+}
+gradient.Parent = ColorButton.UIStroke
+
+local gradient2 = Instance.new("UIGradient")
+gradient2.Rotation = 0
+gradient2.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
+    ColorSequenceKeypoint.new(0.17, Color3.fromRGB(255, 165, 0)),
+    ColorSequenceKeypoint.new(0.33, Color3.fromRGB(255, 255, 0)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 255, 0)),
+    ColorSequenceKeypoint.new(0.67, Color3.fromRGB(0, 0, 255)),
+    ColorSequenceKeypoint.new(0.83, Color3.fromRGB(75, 0, 130)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(148, 0, 211))
+}
+
+gradient2.Parent = ColorButton.UIStroke2
+
+SpawnButton.MouseButton1Click:Connect(function()
+    if hasSpawnedRamp or not root then return end
+    hasSpawnedRamp = true
+    lastPart = nil
+    firstPart = nil
+
+    rampFolder = Instance.new("Folder")
+    rampFolder.Name = "TeachersSkyRamp"
+    rampFolder.Parent = workspace
+
+    for i = 1, 89 do
+        local part = Instance.new("Part")
+        part.BrickColor = BrickColor.new("Cashmere")
+        part.Material = Enum.Material.WoodPlanks
+        part.Parent = rampFolder
+        part.Anchored = true
+        part.CastShadow = false
+
+        if i == 1 then
+            firstPart = part
+            part.Name = "firstPart"
+        end
+
+        local part2 = Instance.new("Part")
+        part2.BrickColor = BrickColor.new("Cashmere")
+        part2.Material = Enum.Material.WoodPlanks
+        part2.Parent = rampFolder
+        part2.Anchored = true
+        part2.Size = Vector3.new(5,15,20)
+
+        local part3 = Instance.new("Part")
+        part3.BrickColor = BrickColor.new("Cashmere")
+        part3.Material = Enum.Material.WoodPlanks
+        part3.Parent = rampFolder
+        part3.Anchored = true
+        part3.Size = Vector3.new(5,15,20)
+
+        if lastPart then
+            part2.CFrame = part.CFrame * CFrame.new(part.Size.X/2 + part2.Size.X/2, part2.Size.Y/2, 0)
+            part3.CFrame = part.CFrame * CFrame.new(-(part.Size.X/2 + part3.Size.X/2), part3.Size.Y/2, 0)
+        end
+
+        if i == 35 or i == 36 or i == 37 or i == 60 then
+            part2.Size = Vector3.new(5,15,2500)
+            part3.Size = Vector3.new(5,15,2500)
+            part.Size = Vector3.new(100,2,2500)
+            if lastPart then
+                part.CFrame = lastPart.CFrame * CFrame.new(0, part.Size.Y/2, -(lastPart.Size.Z/2 + part.Size.Z/500)) * CFrame.Angles(math.rad(1),0,0)
+                part2.CFrame = part.CFrame * CFrame.new(part.Size.X/2 + part2.Size.X/2, part2.Size.Y/2, 0)
+                part3.CFrame = part.CFrame * CFrame.new(-(part.Size.X/2 + part3.Size.X/2), part3.Size.Y/2, 0)
+            end
+        else
+            part2.Size = Vector3.new(5,15,20)
+            part3.Size = Vector3.new(5,15,20)
+            part.Size = Vector3.new(100,0.2,20)
+        end
+
+        if i == 1 then
+            part.CFrame = root.CFrame * CFrame.new(0,-4,-1)
+        elseif i ~= 35 and i ~=36 and i ~=37 and i ~=60 then
+            part.CFrame = lastPart.CFrame * CFrame.new(0, part.Size.Y/2, -(lastPart.Size.Z/2.5 + part.Size.Z/2.5)) * CFrame.Angles(math.rad(1),0,0)
+            part2.CFrame = part.CFrame * CFrame.new(part.Size.X/2 + part2.Size.X/2, part2.Size.Y/2, 0)
+            part3.CFrame = part.CFrame * CFrame.new(-(part.Size.X/2 + part3.Size.X/2), part3.Size.Y/2, 0)
+        end
+
+        if i == 89 then part.Name = "LastPartBruh" end
+        lastPart = part
+    end
+
+	local platform = Instance.new("Part")
+    platform.Name = "platform"
+    platform.Parent = rampFolder
+    platform.Size = Vector3.new(100,250,20)
+    platform.Anchored = true
+    platform.BrickColor = BrickColor.new("Cashmere")
+    platform.Material = Enum.Material.WoodPlanks
+    platform.CFrame = lastPart.CFrame * CFrame.new(0,-125,0)
+    pPlatform = platform
+
+    for i = 1, 6 do
+        local part = Instance.new("Part")
+        part.Parent = rampFolder
+        part.Anchored = true
+        part.Size = Vector3.new(100, 5.2, 30)
+        part.BrickColor = BrickColor.new("Cashmere")
+        part.Material = Enum.Material.WoodPlanks
+
+        if i == 1 then
+            part.CFrame = root.CFrame * CFrame.new(0, -6, 10) * CFrame.Angles(0, math.rad(180), 0)
+        else
+            part.CFrame = lastPart.CFrame * CFrame.new(0, part.Size.Y/2, -(lastPart.Size.Z/2 + part.Size.Z/2)) * CFrame.Angles(math.rad(10), 0, 0)
+        end
+
+        lastPart = part
+    end
+
+    local Platform = Instance.new("Part")
+    Platform.Name = "Platform"
+    Platform.Parent = rampFolder
+    Platform.Size = Vector3.new(100,50,2500)
+    Platform.Anchored = true
+    Platform.CFrame = root.CFrame - Vector3.new(0,60,0)
+    Pplatform = Platform
+end)
+
+callButton.MouseButton1Click:Connect(function()
+    if isCalling then return end
+    if not hasSpawnedRamp or not rampFolder then return end
+    isCalling = true
+
+    local Platform = rampFolder:FindFirstChild("Platform")
+    local lastPart = rampFolder:FindFirstChild("LastPartBruh")
+    if not Platform or not lastPart then isCalling = false return end
+
+    local startPos = Platform.Position
+    local yAlignPos = Vector3.new(startPos.X, lastPart.Position.Y + Platform.Size.Y/2, startPos.Z)
+    local fullPos = lastPart.Position + Vector3.new(0, Platform.Size.Y/2, 0)
+    local resetPos = root.Position - Vector3.new(0,60,0)
+
+    local tween1 = tweenService:Create(Platform, TweenInfo.new(20, Enum.EasingStyle.Linear), {Position = yAlignPos})
+    tween1:Play()
+    tween1.Completed:Wait()
+
+    wait(1)
+
+    local tween2 = tweenService:Create(Platform, TweenInfo.new(20, Enum.EasingStyle.Linear), {Position = fullPos})
+    tween2:Play()
+    tween2.Completed:Wait()
+
+    wait(5)
+
+    local tween3 = tweenService:Create(Platform, TweenInfo.new(1.5, Enum.EasingStyle.Linear), {Position = resetPos})
+    tween3:Play()
+    tween3.Completed:Wait()
+
+    isCalling = false
+end)
+
+DeleteButton.MouseButton1Click:Connect(function()
+    hasSpawnedRamp = false
+    if rampFolder then
+        for _, thing in pairs(rampFolder:GetChildren()) do
+            thing:Destroy()
+        end
+        rampFolder:Destroy()
+        rampFolder = nil
+    end
+    isCalling = false
+end)
