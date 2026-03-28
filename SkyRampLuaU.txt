@@ -17,7 +17,7 @@ local tweenService = game:GetService("TweenService")
 local isCalling = false
 local hasSpawnedRamp = false
 
-local partSpawnDuration = 0.05 --Change this to how long each part should take to load from the ramp. Set to 0 if you want instant load, however might lag out low-end devices.
+local partSpawnDuration = 0 --Change this to how long each part should take to load from the ramp. Set to 0 if you want instant load, however might lag out low-end devices.
 
 local MaterialLIST = nil
 local ColorLIST = nil
