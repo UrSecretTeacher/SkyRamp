@@ -17,8 +17,6 @@ local tweenService = game:GetService("TweenService")
 local isCalling = false
 local hasSpawnedRamp = false
 
-local partSpawnDuration = 0 --Change this to how long each part should take to load from the ramp. Set to 0 if you want instant load, however might lag out low-end devices.
-
 local MaterialLIST = nil
 local ColorLIST = nil
 
@@ -276,7 +274,6 @@ SpawnButton.MouseButton1Click:Connect(function()
 	rampFolder:SetAttribute("IsRamp", true)
 
     for i = 1, 89 do
-		wait(partSpawnDuration)
         local part = Instance.new("Part")
         part.BrickColor = BrickColor.new("Cashmere")
         part.Material = Enum.Material.WoodPlanks
